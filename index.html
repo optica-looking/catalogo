@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f1e9">
+<title>Catálogo de armazones · Óptica Looking</title>
+<meta name="description" content="Catálogo de armazones de Óptica Looking. Buscá por código, material o color.">
+<meta property="og:title" content="Catálogo de armazones · Óptica Looking">
+<meta property="og:description" content="Mirá los armazones disponibles y consultanos por WhatsApp.">
+<meta property="og:image" content="logo.png">
+<link rel="icon" href="logo.png">
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   CONFIGURACIÓN. Estas son las dos únicas líneas que se tocan acá.
+   Todo el resto de los datos se edita en la planilla de Google.
+   ══════════════════════════════════════════════════════════════ */
+
+// 1) Link CSV de la planilla publicada en la web.
+//    Google Sheets: Archivo > Compartir > Publicar en la web > CSV.
+//    Si queda vacío, el catálogo usa la copia local de abajo.
+window.PLANILLA_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQykNuYish1h4uoJcy4P5vseEfGRz2Q8ERgk6G5enj91Pt0LZ-5YVpf9MDiJNX0wCwqiWr5SK9VDCWG/pub?gid=1891476589&single=true&output=csv";
+
+// 2) WhatsApp de la óptica, con código de país y sin signos. Ej: "5493511234567"
+window.WHATSAPP = "5491171156870";
+</script>
+
+<style>
+:root{
+  --papel:#f6f1e9;
+  --papel-alto:#fffdf9;
+  --tinta:#171310;
+  --tinta-suave:#6c6459;
+  --rojo:#c02128;
+  --azul:#1e4b8f;
+  --linea:#e0d7c7;
+  --linea-fuerte:#c9bda8;
+  --mono:ui-monospace,"SFMono-Regular","SF Mono","Roboto Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:var(--papel);color:var(--tinta);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.env{max-width:1360px;margin:0 auto;padding:0 24px}
+@media(min-width:600px){.env{padding:0 34px}}
+@media(min-width:900px){.env{padding:0 48px}}
+
+/* ── Portada: se va al hacer scroll ────────────────────── */
+.portada{padding-top:28px;padding-bottom:24px;border-bottom:1px solid var(--linea)}
+.portada img{height:66px;width:auto;display:block}
+@media(max-width:640px){.portada{padding-top:22px;padding-bottom:20px}.portada img{height:50px}}
+.rotulo{
+  margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--tinta-suave);
+}
+.intro{margin-top:16px;max-width:62ch;display:flex;flex-direction:column;gap:9px}
+.intro p{font-size:14.5px;line-height:1.55;color:var(--tinta)}
+.intro p.suave{color:var(--tinta-suave)}
+.intro b{font-weight:650}
+.intro .codigo-ej{
+  font-family:var(--mono);font-size:13px;letter-spacing:.06em;
+  background:#efe7d8;padding:1px 6px;border-radius:4px;
+}
+
+/* ── Barra fija: buscador y filtros en una sola linea ───── */
+.barra{
+  position:sticky;top:0;z-index:40;background:var(--papel);
+  border-bottom:1px solid var(--linea-fuerte);
+}
+.controles{display:flex;align-items:center;gap:10px;padding-top:10px;padding-bottom:10px}
+.buscador{position:relative;flex:0 1 140px;min-width:0}
+@media(min-width:760px){.buscador{flex:0 1 280px}}
+.buscador svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--tinta-suave);fill:none;stroke-width:2}
+#q{
+  width:100%;padding:10px 12px 10px 33px;border:1px solid var(--linea-fuerte);
+  border-radius:var(--r);background:var(--papel-alto);color:var(--tinta);
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;
+}
+#q::placeholder{color:#a99e8c}
+#q:focus{outline:2px solid var(--azul);outline-offset:1px;border-color:var(--azul)}
+.filtros{
+  display:flex;align-items:center;gap:8px;flex:1;min-width:0;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.filtros::-webkit-scrollbar{display:none}
+.corte{width:1px;height:20px;background:var(--linea-fuerte);flex:none}
+.chips{display:flex;gap:6px;flex:none}
+.chip{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:9px 13px;border:1px solid var(--linea-fuerte);border-radius:var(--r);
+  background:var(--papel-alto);color:var(--tinta);cursor:pointer;white-space:nowrap;
+  transition:background .14s,color .14s,border-color .14s;
+}
+.chip:hover{border-color:var(--tinta)}
+.chip[aria-pressed="true"]{background:var(--tinta);color:var(--papel);border-color:var(--tinta)}
+.chip:active{transform:scale(.97)}
+
+.conteo{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tinta-suave);padding:18px 0 12px;
+}
+
+/* ── Grilla ─────────────────────────────────────────────── */
+.grilla{
+  display:grid;gap:14px;padding-bottom:80px;
+  grid-template-columns:repeat(auto-fill,minmax(158px,1fr));
+}
+@media(min-width:700px){.grilla{gap:22px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}}
+
+.tarjeta{
+  background:var(--papel-alto);border:1px solid var(--linea);border-radius:var(--r);
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:border-color .16s,transform .16s;
+}
+@media(hover:hover){.tarjeta:hover{border-color:var(--linea-fuerte);transform:translateY(-2px)}}
+
+.visor{position:relative;background:#fff;aspect-ratio:1/1;cursor:zoom-in;overflow:hidden}
+.visor img{width:100%;height:100%;object-fit:contain;display:none}
+.visor img.on{display:block}
+
+.material{
+  position:absolute;top:9px;right:9px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+  padding:4px 8px;border-radius:100px;color:#fff;
+}
+.material.acetato{background:var(--azul)}
+.material.metal{background:var(--rojo)}
+.material.plastico{background:var(--tinta)}
+.material.mixto{background:var(--tinta-suave)}
+.material{max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.thumbs{
+  position:absolute;left:9px;bottom:9px;right:9px;display:flex;gap:5px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:1px;
+}
+.thumbs::-webkit-scrollbar{display:none}
+.thumb{
+  width:30px;height:30px;flex:none;border-radius:5px;overflow:hidden;border:1.5px solid #fff;
+  cursor:pointer;opacity:.6;background:#fff;box-shadow:0 1px 5px rgba(23,19,16,.16);padding:0;
+  transition:opacity .14s,border-color .14s;
+}
+.thumb[aria-pressed="true"]{opacity:1;border-color:var(--tinta)}
+.thumb img{width:100%;height:100%;object-fit:contain;display:block}
+
+.cuerpo{padding:12px 13px 14px;border-top:1px solid var(--linea);display:flex;flex-direction:column;gap:4px;flex:1}
+.ref{
+  font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:.08em;
+  color:var(--tinta);line-height:1.1;
+}
+.marca{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--rojo);margin-bottom:1px;
+}
+.nombre{font-size:13px;font-weight:600;letter-spacing:-.01em;line-height:1.25;margin-top:2px}
+.codigo{
+  font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--tinta-suave);
+  display:inline-flex;align-items:center;gap:7px;
+}
+.codigo::before{content:"";width:14px;height:1px;background:var(--linea-fuerte);flex:none}
+.color{font-size:12px;color:var(--tinta-suave);line-height:1.35;margin-top:2px}
+.categoria{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tinta-suave);margin-top:3px;
+}
+
+/* la referencia tambien va sobre la foto, chiquita, como grabado */
+.sello{
+  position:absolute;left:10px;top:10px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  color:var(--tinta-suave);background:rgba(255,255,255,.86);
+  padding:3px 7px;border-radius:100px;
+}
+.consultar{
+  margin-top:auto;padding-top:11px;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--azul);
+  text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+}
+.consultar:hover{text-decoration:underline}
+.consultar svg{width:13px;height:13px;fill:currentColor}
+
+/* ── Estados ────────────────────────────────────────────── */
+.aviso{
+  padding:60px 0 90px;text-align:center;color:var(--tinta-suave);
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;line-height:2;
+}
+.esqueleto{background:var(--papel-alto);border:1px solid var(--linea);border-radius:var(--r);overflow:hidden}
+.esqueleto .b{aspect-ratio:1/1;background:linear-gradient(100deg,#f2ece1 30%,#faf6ef 50%,#f2ece1 70%);background-size:300% 100%;animation:brillo 1.4s linear infinite}
+.esqueleto .c{height:74px;border-top:1px solid var(--linea)}
+@keyframes brillo{to{background-position:-300% 0}}
+@media(prefers-reduced-motion:reduce){.esqueleto .b{animation:none}}
+
+/* ── Visor ampliado ─────────────────────────────────────── */
+.lupa{
+  position:fixed;inset:0;z-index:90;background:rgba(23,19,16,.94);
+  display:none;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px 24px;
+}
+.lupa.abierta{display:flex}
+.lupa-top{display:flex;justify-content:space-between;align-items:center;gap:16px;color:#f6f1e9}
+.lupa-cod{font-family:var(--mono);font-size:12px;letter-spacing:.08em}
+.lupa-x{background:none;border:1px solid rgba(246,241,233,.35);color:#f6f1e9;border-radius:100px;width:36px;height:36px;font-size:19px;line-height:1;cursor:pointer}
+.lupa-x:hover{background:rgba(246,241,233,.12)}
+.lupa-marco{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;position:relative;margin:14px 0}
+.lupa-marco img{max-width:100%;max-height:100%;object-fit:contain;background:#fff;border-radius:6px}
+.lupa-nav{background:rgba(246,241,233,.14);border:none;color:#f6f1e9;width:42px;height:42px;border-radius:100px;font-size:20px;cursor:pointer;position:absolute;top:50%;transform:translateY(-50%)}
+.lupa-nav:hover{background:rgba(246,241,233,.3)}
+.lupa-nav.prev{left:0}
+.lupa-nav.next{right:0}
+.lupa-pie{text-align:center;color:rgba(246,241,233,.72);font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+
+footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:var(--papel)}
+.cierre{max-width:62ch;margin-right:auto}
+.cierre-tit{font-size:19px;font-weight:650;letter-spacing:-.01em}
+.cierre-txt{margin-top:9px;font-size:14.5px;line-height:1.55;color:var(--tinta)}
+.cierre-txt.suave{color:var(--tinta-suave)}
+.boton-wa{
+  display:inline-flex;align-items:center;gap:8px;margin-top:18px;
+  background:var(--tinta);color:var(--papel);text-decoration:none;
+  padding:12px 20px;border-radius:100px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+}
+.boton-wa:hover{background:var(--rojo)}
+.boton-wa:active{transform:scale(.98)}
+.boton-wa svg{width:15px;height:15px;fill:currentColor}
+</style>
+</head>
+<body>
+
+<header class="env portada">
+  <img src="logo.png" alt="Óptica Looking">
+  <p class="rotulo">Catálogo de armazones</p>
+  <div class="intro">
+    <p>Para consultar por un armazón, mandanos por WhatsApp su código, por ejemplo <span class="codigo-ej">L-047</span>, o una captura de pantalla de la foto.</p>
+    <p class="suave">Acá está solo una parte de lo que tenemos: en el local hay cientos de modelos más. Si no encontrás lo que buscás, escribinos igual, que seguro lo tenemos o te ayudamos a encontrarlo.</p>
+  </div>
+</header>
+
+<div class="barra">
+  <div class="env controles">
+    <div class="buscador">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Buscar código" autocomplete="off" aria-label="Buscar armazones">
+    </div>
+    <div class="filtros">
+      <div class="chips" role="group" aria-label="Filtrar por categoría">
+        <button class="chip" data-filtro="categoria" data-valor="" aria-pressed="true">Todos</button>
+        <button class="chip" data-filtro="categoria" data-valor="Mujer" aria-pressed="false">Mujer</button>
+        <button class="chip" data-filtro="categoria" data-valor="Hombre" aria-pressed="false">Hombre</button>
+        <button class="chip" data-filtro="categoria" data-valor="Niño" aria-pressed="false">Niño</button>
+        <button class="chip" data-filtro="categoria" data-valor="Clip on" aria-pressed="false">Clip on</button>
+      </div>
+      <span class="corte" id="corte-marca" aria-hidden="true" hidden></span>
+      <div class="chips" id="chips-marca" role="group" aria-label="Filtrar por marca"></div>
+      <span class="corte" aria-hidden="true"></span>
+      <div class="chips" role="group" aria-label="Filtrar por material">
+        <button class="chip" data-filtro="material" data-valor="" aria-pressed="true">Todos</button>
+        <button class="chip" data-filtro="material" data-valor="Acetato" aria-pressed="false">Acetato</button>
+        <button class="chip" data-filtro="material" data-valor="Metal" aria-pressed="false">Metal</button>
+        <button class="chip" data-filtro="material" data-valor="Metal y acetato" aria-pressed="false">Metal y acetato</button>
+        <button class="chip" data-filtro="material" data-valor="Plástico" aria-pressed="false">Plástico</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="env">
+  <p class="conteo" id="conteo">Cargando</p>
+  <main class="grilla" id="grilla"></main>
+</div>
+
+<footer>
+  <div class="env"><div class="cierre">
+    <p class="cierre-tit">No encontraste el que buscabas</p>
+    <p class="cierre-txt">En el local tenemos cientos de modelos más que no llegaron a este catálogo. Contanos qué estás buscando y te ayudamos.</p>
+    <p class="cierre-txt suave">Si ya elegiste uno, mandanos su código o una captura de la foto.</p>
+    <span id="pie-wa"></span>
+  </div></div>
+</footer>
+
+<div class="lupa" id="lupa" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <div class="lupa-top">
+    <span class="lupa-cod" id="lupa-cod"></span>
+    <button class="lupa-x" id="lupa-x" aria-label="Cerrar">&times;</button>
+  </div>
+  <div class="lupa-marco">
+    <button class="lupa-nav prev" id="lupa-prev" aria-label="Foto anterior">&#8249;</button>
+    <img id="lupa-img" alt="">
+    <button class="lupa-nav next" id="lupa-next" aria-label="Foto siguiente">&#8250;</button>
+  </div>
+  <p class="lupa-pie" id="lupa-pie"></p>
+</div>
+
+<script src="datos.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ── CSV ────────────────────────────────────────────────── */
+  function parseCSV(texto){
+    const filas=[]; let campo="", fila=[], comillas=false;
+    texto=texto.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+    for(let i=0;i<texto.length;i++){
+      const c=texto[i];
+      if(comillas){
+        if(c==='"'){ if(texto[i+1]==='"'){campo+='"';i++;} else comillas=false; }
+        else campo+=c;
+      }else{
+        if(c==='"') comillas=true;
+        else if(c===","){ fila.push(campo); campo=""; }
+        else if(c==="\n"){ fila.push(campo); filas.push(fila); fila=[]; campo=""; }
+        else campo+=c;
+      }
+    }
+    if(campo!==""||fila.length){ fila.push(campo); filas.push(fila); }
+    return filas.filter(f=>f.some(v=>v.trim()!==""));
+  }
+
+  function aObjetos(filas){
+    if(!filas.length) return [];
+    const cab=filas[0].map(h=>h.trim().toLowerCase());
+    return filas.slice(1).map(f=>{
+      const o={};
+      cab.forEach((h,i)=>{ o[h]=(f[i]||"").trim(); });
+      return o;
+    });
+  }
+
+  function normalizar(o){
+    const fotos=(o.fotos||"").split(/[|,;]/).map(s=>s.trim()).filter(Boolean)
+      .map(s=>/^\d+$/.test(s) ? "img/"+String(s).padStart(3,"0")+".jpg" : (s.indexOf("/")>-1?s:"img/"+s));
+    const mat=(o.material||"").trim();
+    return {
+      ref:(o.ref||"").trim(),
+      marca:(o.marca||"").trim(),
+      categoria:(o.categoria||"").trim(),
+      codigo:(o.codigo||"").trim(),
+      nombre:(o.nombre||"").trim(),
+      material:mat,
+      tipo:(o.tipo||"").trim(),
+      color:(o.color||"").trim(),
+      fotos:fotos,
+      activo:((o.activo||"si").toLowerCase()!=="no")
+    };
+  }
+
+  /* ── Estado ─────────────────────────────────────────────── */
+  let MODELOS=[], filtros={material:"",categoria:"",marca:""}, busqueda="", origen="";
+  const $grilla=document.getElementById("grilla");
+  const $conteo=document.getElementById("conteo");
+
+  function sinAcentos(s){ return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
+
+  /* Un armazon marcado como Unisex aparece tambien en Mujer y en Hombre. */
+  function coincideCategoria(cats, filtro){
+    const c=sinAcentos(cats), f=sinAcentos(filtro);
+    if(c.indexOf(f)>-1) return true;
+    return (f==="mujer"||f==="hombre") && c.indexOf("unisex")>-1;
+  }
+
+  function visibles(){
+    const q=sinAcentos(busqueda.trim());
+    return MODELOS.filter(m=>{
+      if(!m.activo) return false;
+      if(filtros.material && m.material.toLowerCase()!==filtros.material.toLowerCase()) return false;
+      if(filtros.categoria && !coincideCategoria(m.categoria, filtros.categoria)) return false;
+      if(filtros.marca && sinAcentos(m.marca)!==sinAcentos(filtros.marca)) return false;
+      if(!q) return true;
+      return sinAcentos([m.ref,m.codigo,m.marca,m.nombre,m.color,m.categoria,m.material,m.tipo].join(" ")).indexOf(q)>-1;
+    });
+  }
+
+  const ICONO_WA='<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1112 20zm4.4-5.8c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.6.1a6.6 6.6 0 01-3.2-2.8c-.2-.4.2-.4.6-1.2a.5.5 0 000-.5c0-.1-.6-1.4-.8-1.9s-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4 5 5 0 002.3.5 2.7 2.7 0 001.8-1.3 2.2 2.2 0 00.2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>';
+
+  function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  function tarjeta(m,idx){
+    const CLASES={acetato:"acetato",metal:"metal",plastico:"plastico","metal y acetato":"mixto"};
+    const clase=CLASES[sinAcentos(m.material)]||"";
+    const titulo=m.ref || m.nombre || m.codigo || "Sin referencia";
+    const imgs=m.fotos.map((f,i)=>
+      '<img src="'+esc(f)+'" class="'+(i===0?"on":"")+'" alt="'+esc(titulo)+'" loading="lazy" decoding="async">'
+    ).join("");
+    const thumbs=m.fotos.length>1
+      ? '<div class="thumbs">'+m.fotos.map((f,i)=>
+          '<button class="thumb" data-i="'+i+'" aria-pressed="'+(i===0)+'" aria-label="Foto '+(i+1)+'"><img src="'+esc(f)+'" alt="" loading="lazy"></button>').join("")+'</div>'
+      : "";
+    const wa = window.WHATSAPP
+      ? '<a class="consultar" target="_blank" rel="noopener" href="https://wa.me/'+window.WHATSAPP+'?text='+encodeURIComponent("Hola! Me interesa el armazón "+titulo+(m.marca?" de "+m.marca:"")+(m.color?" en "+m.color:"")+".")+'">'+ICONO_WA+'Consultar</a>'
+      : "";
+    return '<article class="tarjeta" data-idx="'+idx+'">'+
+        '<div class="visor" data-visor role="button" tabindex="0" aria-label="Ampliar foto de '+esc(titulo)+'">'+
+          imgs+
+          (m.ref?'<span class="sello">'+esc(m.ref)+'</span>':"")+
+          (clase?'<span class="material '+clase+'">'+esc(m.material==="Metal y acetato"?"Metal + acetato":m.material)+'</span>':"")+
+          thumbs+
+        '</div>'+
+        '<div class="cuerpo">'+
+          (m.marca?'<p class="marca">'+esc(m.marca)+'</p>':"")+
+          '<h2 class="ref">'+esc(titulo)+'</h2>'+
+          (m.nombre?'<p class="nombre">'+esc(m.nombre)+'</p>':"")+
+          (m.codigo?'<p class="codigo">'+esc(m.codigo)+'</p>':"")+
+          (m.categoria?'<p class="categoria">'+esc(m.categoria)+'</p>':"")+
+          (m.color?'<p class="color">'+esc(m.color)+'</p>':"")+
+          wa+
+        '</div>'+
+      '</article>';
+  }
+
+  function pintar(){
+    const lista=visibles();
+    const cuantos = lista.length===1 ? "1 modelo" : lista.length+" modelos";
+    $conteo.textContent = origen==="local" ? cuantos+"  ·  copia local" : cuantos;
+    if(!lista.length){
+      $grilla.innerHTML="";
+      $grilla.insertAdjacentHTML("beforeend",'<p class="aviso" style="grid-column:1/-1">No hay armazones que coincidan.<br>Probá con otro código o sacá los filtros.</p>');
+      return;
+    }
+    $grilla.innerHTML=lista.map((m,i)=>tarjeta(m,MODELOS.indexOf(m))).join("");
+  }
+
+  /* ── Interacción de tarjetas ────────────────────────────── */
+  $grilla.addEventListener("click",function(e){
+    const th=e.target.closest(".thumb");
+    if(th){
+      const visor=th.closest(".visor");
+      const i=+th.dataset.i;
+      visor.querySelectorAll("img.on").forEach(x=>x.classList.remove("on"));
+      visor.querySelectorAll(":scope > img")[i].classList.add("on");
+      visor.querySelectorAll(".thumb").forEach(b=>b.setAttribute("aria-pressed", b===th));
+      return;
+    }
+    const visor=e.target.closest("[data-visor]");
+    if(visor){
+      const art=visor.closest(".tarjeta");
+      const activa=[...visor.querySelectorAll(":scope > img")].findIndex(x=>x.classList.contains("on"));
+      abrirLupa(+art.dataset.idx, Math.max(0,activa));
+    }
+  });
+  $grilla.addEventListener("keydown",function(e){
+    if((e.key==="Enter"||e.key===" ") && e.target.matches("[data-visor]")){
+      e.preventDefault(); e.target.click();
+    }
+  });
+
+  /* ── Visor ampliado ─────────────────────────────────────── */
+  const $lupa=document.getElementById("lupa"), $lupaImg=document.getElementById("lupa-img"),
+        $lupaCod=document.getElementById("lupa-cod"), $lupaPie=document.getElementById("lupa-pie");
+  let lupaModelo=null, lupaFoto=0;
+
+  function abrirLupa(idx,foto){
+    lupaModelo=MODELOS[idx]; lupaFoto=foto||0;
+    if(!lupaModelo) return;
+    $lupa.classList.add("abierta");
+    document.body.style.overflow="hidden";
+    verFoto();
+  }
+  function verFoto(){
+    const m=lupaModelo;
+    $lupaImg.src=m.fotos[lupaFoto]||"";
+    $lupaImg.alt=m.nombre||m.codigo||"Armazón";
+    $lupaCod.textContent=[m.ref,m.codigo,m.color,m.categoria].filter(Boolean).join("  ·  ") || (m.nombre||"");
+    $lupaPie.textContent=m.fotos.length>1 ? (lupaFoto+1)+" de "+m.fotos.length : (m.material||"");
+    const solo=m.fotos.length<2;
+    document.getElementById("lupa-prev").style.display=solo?"none":"";
+    document.getElementById("lupa-next").style.display=solo?"none":"";
+  }
+  function mover(d){
+    if(!lupaModelo) return;
+    lupaFoto=(lupaFoto+d+lupaModelo.fotos.length)%lupaModelo.fotos.length;
+    verFoto();
+  }
+  function cerrarLupa(){ $lupa.classList.remove("abierta"); document.body.style.overflow=""; lupaModelo=null; }
+
+  document.getElementById("lupa-x").onclick=cerrarLupa;
+  document.getElementById("lupa-prev").onclick=()=>mover(-1);
+  document.getElementById("lupa-next").onclick=()=>mover(1);
+  $lupa.addEventListener("click",e=>{ if(e.target===$lupa||e.target.classList.contains("lupa-marco")) cerrarLupa(); });
+  document.addEventListener("keydown",e=>{
+    if(!$lupa.classList.contains("abierta")) return;
+    if(e.key==="Escape") cerrarLupa();
+    if(e.key==="ArrowLeft") mover(-1);
+    if(e.key==="ArrowRight") mover(1);
+  });
+  let x0=null;
+  $lupa.addEventListener("touchstart",e=>{ x0=e.touches[0].clientX; },{passive:true});
+  $lupa.addEventListener("touchend",e=>{
+    if(x0===null) return;
+    const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50) mover(dx<0?1:-1);
+    x0=null;
+  },{passive:true});
+
+  /* ── Filtros ────────────────────────────────────────────── */
+  function activar(b){
+    const grupo=b.dataset.filtro;
+    filtros[grupo]=b.dataset.valor;
+    document.querySelectorAll('.chip[data-filtro="'+grupo+'"]').forEach(o=>o.setAttribute("aria-pressed",o===b));
+    pintar();
+  }
+  document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>activar(b)));
+  let t=null;
+  document.getElementById("q").addEventListener("input",e=>{
+    clearTimeout(t);
+    t=setTimeout(()=>{ busqueda=e.target.value; pintar(); },140);
+  });
+
+  /* ── Carga ──────────────────────────────────────────────── */
+  $grilla.innerHTML=Array.from({length:8},()=>'<div class="esqueleto"><div class="b"></div><div class="c"></div></div>').join("");
+
+  function chipsDeMarca(){
+    const marcas=[...new Set(MODELOS.filter(m=>m.activo&&m.marca).map(m=>m.marca))]
+      .sort((a,b)=>a.localeCompare(b,"es"));
+    const cont=document.getElementById("chips-marca");
+    const corte=document.getElementById("corte-marca");
+    if(!marcas.length){ cont.innerHTML=""; corte.hidden=true; return; }
+    corte.hidden=false;
+    cont.innerHTML='<button class="chip" data-filtro="marca" data-valor="" aria-pressed="true">Marca</button>'+
+      marcas.map(x=>'<button class="chip" data-filtro="marca" data-valor="'+esc(x)+'" aria-pressed="false">'+esc(x)+'</button>').join("");
+    cont.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>activar(b)));
+  }
+
+  function usar(csv){
+    // se muestran del ultimo al primero: lo que se agrega abajo en la planilla
+    // aparece arriba de todo en el catalogo
+    MODELOS=aObjetos(parseCSV(csv)).map(normalizar).reverse();
+    if(!MODELOS.length){ fallo("La planilla está vacía."); return; }
+    chipsDeMarca();
+    pintar();
+  }
+  function fallo(msg){
+    $conteo.textContent="";
+    $grilla.innerHTML='<p class="aviso" style="grid-column:1/-1">'+msg+'</p>';
+  }
+
+  if(window.WHATSAPP){
+    document.getElementById("pie-wa").innerHTML='<a class="boton-wa" target="_blank" rel="noopener" href="https://wa.me/'+window.WHATSAPP+'?text='+encodeURIComponent("Hola! Estoy mirando el catálogo y quería hacerles una consulta.")+'">'+ICONO_WA+'Escribinos por WhatsApp</a>';
+  }
+
+  if(typeof window.PLANILLA_CSV==="string" && window.PLANILLA_CSV){
+    // el parametro de tiempo evita que el navegador muestre una copia vieja
+    const url=window.PLANILLA_CSV+(window.PLANILLA_CSV.indexOf("?")>-1?"&":"?")+"t="+Date.now();
+    fetch(url,{cache:"no-store"})
+      .then(r=>{ if(!r.ok) throw new Error(r.status); return r.text(); })
+      .then(txt=>{
+        if(txt.indexOf("<!DOCTYPE")>-1 || txt.indexOf("<html")>-1)
+          throw new Error("el link no devuelve un CSV");
+        console.log("Catálogo: datos leídos de la planilla de Google.");
+        usar(txt, "planilla");
+      })
+      .catch(err=>{
+        if(location.protocol==="file:"){
+          console.warn("Catálogo: al abrir el archivo desde la computadora, el navegador no deja leer la planilla de Google. Es una regla de seguridad, no un error del catálogo. Una vez publicado en internet funciona bien.");
+        }else{
+          console.warn("Catálogo: no se pudo leer la planilla de Google (" + err.message + "). Se usa la copia local de datos.js.");
+          console.warn("Revisá que el link termine en output=csv y que la hoja esté publicada en Archivo > Compartir > Publicar en la web.");
+        }
+        if(window.DATOS_LOCALES) usar(window.DATOS_LOCALES, "local");
+        else fallo("No se pudo leer la planilla.");
+      });
+  }else if(window.DATOS_LOCALES){
+    console.log("Catálogo: sin link de planilla, se usa la copia local de datos.js.");
+    usar(window.DATOS_LOCALES, "local");
+  }else{
+    fallo("Falta cargar los datos.");
+  }
+})();
+</script>
+</body>
+</html>
