@@ -1,0 +1,5 @@
+# Le pide a los buscadores que no indexen el catalogo.
+# El link sigue funcionando para quien lo tenga.
+# Para permitir que Google lo encuentre, borra este archivo.
+User-agent: *
+Disallow: /
