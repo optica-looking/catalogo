@@ -5,16 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f6f1e9">
 <title>Catálogo de armazones · Óptica Looking</title>
-<meta name="description" content="Catálogo de armazones de Óptica Looking. Buscá por código, material o color.">
+<meta name="description" content="Catálogo de armazones y lentes de sol de Óptica Looking. Buscá por código, material o color.">
 <meta property="og:title" content="Catálogo de armazones · Óptica Looking">
 <meta property="og:description" content="Mirá los armazones disponibles y consultanos por WhatsApp.">
 <meta property="og:image" content="logo.png">
 <link rel="icon" href="logo.png">
-
-<!-- Pide a Google y demás buscadores que no muestren esta página en sus resultados.
-     El catálogo sigue funcionando normal para quien tenga el link.
-     Si algún día querés que aparezca en Google, borrá la línea de abajo. -->
-<meta name="robots" content="noindex, nofollow">
 
 <script>
 /* ══════════════════════════════════════════════════════════════
@@ -25,10 +20,11 @@
 // 1) Link CSV de la planilla publicada en la web.
 //    Google Sheets: Archivo > Compartir > Publicar en la web > CSV.
 //    Si queda vacío, el catálogo usa la copia local de abajo.
-window.PLANILLA_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQykNuYish1h4uoJcy4P5vseEfGRz2Q8ERgk6G5enj91Pt0LZ-5YVpf9MDiJNX0wCwqiWr5SK9VDCWG/pub?gid=1891476589&single=true&output=csv";
+window.PLANILLA_CSV =
+ "https://docs.google.com/spreadsheets/d/e/2PACX-1vQykNuYish1h4uoJcy4P5vseEfGRz2Q8ERgk6G5enj91Pt0LZ-5YVpf9MDiJNX0wCwqiWr5SK9VDCWG/pub?gid=1891476589&single=true&output=csv";
 
 // 2) WhatsApp de la óptica, con código de país y sin signos. Ej: "5493511234567"
-window.WHATSAPP = "5491171156870";
+window.WHATSAPP = "5491137730206";
 </script>
 
 <style>
@@ -73,14 +69,16 @@ body{
   background:#efe7d8;padding:1px 6px;border-radius:4px;
 }
 
-/* ── Barra fija: buscador y filtros en una sola linea ───── */
+/* ── Barra fija ─────────────────────────────────────────── */
 .barra{
   position:sticky;top:0;z-index:40;background:var(--papel);
   border-bottom:1px solid var(--linea-fuerte);
 }
-.controles{display:flex;align-items:center;gap:10px;padding-top:10px;padding-bottom:10px}
-.buscador{position:relative;flex:0 1 140px;min-width:0}
-@media(min-width:760px){.buscador{flex:0 1 280px}}
+.controles{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding-top:10px;padding-bottom:10px;
+}
+.buscador{position:relative;flex:1 1 150px;min-width:0;order:1}
 .buscador svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--tinta-suave);fill:none;stroke-width:2}
 #q{
   width:100%;padding:10px 12px 10px 33px;border:1px solid var(--linea-fuerte);
@@ -89,27 +87,96 @@ body{
 }
 #q::placeholder{color:#a99e8c}
 #q:focus{outline:2px solid var(--azul);outline-offset:1px;border-color:var(--azul)}
-.filtros{
-  display:flex;align-items:center;gap:8px;flex:1;min-width:0;
-  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+
+/* Primer nivel: receta o sol. Siempre a la vista. */
+.segmentado{
+  display:flex;gap:3px;flex:1 1 100%;order:3;
+  background:#ece4d6;border:1px solid var(--linea-fuerte);
+  border-radius:var(--r);padding:3px;
 }
-.filtros::-webkit-scrollbar{display:none}
-.corte{width:1px;height:20px;background:var(--linea-fuerte);flex:none}
-.chips{display:flex;gap:6px;flex:none}
+.seg{
+  flex:1;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  padding:8px 12px;border:none;border-radius:7px;background:transparent;color:var(--tinta-suave);
+  cursor:pointer;white-space:nowrap;transition:background .14s,color .14s;
+}
+@media(max-width:430px){.seg{padding:8px 6px;font-size:10px;letter-spacing:.07em}}
+.seg:hover{color:var(--tinta)}
+.seg[aria-pressed="true"]{background:var(--tinta);color:var(--papel);font-weight:600}
+.seg:active{transform:scale(.98)}
+
+/* Pestaña de filtros */
+.btn-filtrar{
+  order:2;flex:none;display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 14px;border:1px solid var(--linea-fuerte);border-radius:var(--r);
+  background:var(--papel-alto);color:var(--tinta);cursor:pointer;white-space:nowrap;
+  transition:background .14s,border-color .14s;
+}
+.btn-filtrar:hover{border-color:var(--tinta)}
+.btn-filtrar[aria-expanded="true"]{background:var(--tinta);color:var(--papel);border-color:var(--tinta)}
+.btn-filtrar svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round}
+.globo{
+  min-width:17px;height:17px;padding:0 4px;border-radius:100px;background:var(--rojo);color:#fff;
+  font-size:10px;line-height:17px;text-align:center;letter-spacing:0;font-weight:700;
+}
+.btn-filtrar[aria-expanded="true"] .globo{background:var(--papel);color:var(--tinta)}
+
+@media(min-width:820px){
+  .buscador{flex:0 1 260px}
+  .segmentado{flex:0 0 auto;order:2;padding:3px}
+  .seg{flex:none;padding:8px 14px}
+  .btn-filtrar{order:3;margin-left:auto}
+}
+
+/* ── Panel de filtros ───────────────────────────────────── */
+.panel{
+  border-top:1px solid var(--linea);background:var(--papel-alto);
+  box-shadow:0 14px 22px -18px rgba(23,19,16,.35);
+  max-height:calc(100vh - 130px);overflow-y:auto;
+}
+.panel-in{padding-top:18px;padding-bottom:16px;display:flex;flex-direction:column;gap:15px}
+.grupo{display:flex;flex-direction:column;gap:8px}
+.grupo-tit{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--tinta-suave);
+}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{
   font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
   padding:9px 13px;border:1px solid var(--linea-fuerte);border-radius:var(--r);
-  background:var(--papel-alto);color:var(--tinta);cursor:pointer;white-space:nowrap;
+  background:var(--papel);color:var(--tinta);cursor:pointer;white-space:nowrap;
   transition:background .14s,color .14s,border-color .14s;
 }
 .chip:hover{border-color:var(--tinta)}
 .chip[aria-pressed="true"]{background:var(--tinta);color:var(--papel);border-color:var(--tinta)}
 .chip:active{transform:scale(.97)}
+.panel-pie{
+  display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap;
+  border-top:1px solid var(--linea);padding-top:14px;
+}
+.panel-pie .cuantos{
+  margin-right:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--tinta-suave);white-space:nowrap;
+}
+@media(max-width:560px){.panel-pie .cuantos{flex:1 1 100%;margin:0 0 2px}}
+.txt-btn{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  background:none;border:none;color:var(--tinta-suave);cursor:pointer;padding:9px 4px;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.txt-btn:hover{color:var(--rojo)}
+.btn-listo{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--tinta);color:var(--papel);border:none;border-radius:100px;
+  padding:10px 20px;cursor:pointer;
+}
+.btn-listo:hover{background:var(--rojo)}
 
 .conteo{
   font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--tinta-suave);padding:18px 0 12px;
 }
+.conteo .agotados{color:var(--tinta-suave);opacity:.75}
 
 /* ── Grilla ─────────────────────────────────────────────── */
 .grilla{
@@ -117,6 +184,8 @@ body{
   grid-template-columns:repeat(auto-fill,minmax(158px,1fr));
 }
 @media(min-width:700px){.grilla{gap:22px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}}
+/* en celulares angostos entran igual dos columnas */
+@media(max-width:420px){.env{padding:0 16px}.grilla{gap:12px;grid-template-columns:repeat(auto-fill,minmax(146px,1fr))}}
 
 .tarjeta{
   background:var(--papel-alto);border:1px solid var(--linea);border-radius:var(--r);
@@ -138,7 +207,28 @@ body{
 .material.metal{background:var(--rojo)}
 .material.plastico{background:var(--tinta)}
 .material.mixto{background:var(--tinta-suave)}
-.material{max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* nunca tapa el sello con la referencia que esta arriba a la izquierda */
+.material{max-width:calc(100% - 92px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* en pantallas chicas la etiqueta larga no entra: se muestra la corta */
+.material .corto{display:none}
+@media(max-width:699px){.material .largo{display:none}.material .corto{display:inline}}
+
+/* ── Banda de SIN STOCK ─────────────────────────────────────
+   Cruza la foto en diagonal con poca opacidad: se lee de lejos
+   y el armazón se sigue viendo entero por debajo. */
+.banda{
+  position:absolute;left:-16%;right:-16%;top:50%;
+  transform:translateY(-50%) rotate(-22deg);
+  background:rgba(23,19,16,.38);
+  border-top:1px solid rgba(255,255,255,.32);
+  border-bottom:1px solid rgba(255,255,255,.32);
+  padding:6px 0;text-align:center;pointer-events:none;
+  font-family:var(--mono);font-size:10.5px;font-weight:700;
+  letter-spacing:.32em;text-indent:.32em;text-transform:uppercase;
+  color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.65);
+}
+@media(min-width:700px){.banda{font-size:12px;padding:8px 0}}
+.lupa .banda{font-size:20px;padding:16px 0;letter-spacing:.4em;text-indent:.4em}
 
 .thumbs{
   position:absolute;left:9px;bottom:9px;right:9px;display:flex;gap:5px;
@@ -163,16 +253,16 @@ body{
   text-transform:uppercase;color:var(--rojo);margin-bottom:1px;
 }
 .nombre{font-size:13px;font-weight:600;letter-spacing:-.01em;line-height:1.25;margin-top:2px}
-.codigo{
-  font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--tinta-suave);
-  display:inline-flex;align-items:center;gap:7px;
-}
-.codigo::before{content:"";width:14px;height:1px;background:var(--linea-fuerte);flex:none}
 .color{font-size:12px;color:var(--tinta-suave);line-height:1.35;margin-top:2px}
 .categoria{
   font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--tinta-suave);margin-top:3px;
 }
+.agotado{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--tinta-suave);margin-top:5px;display:inline-flex;align-items:center;gap:6px;
+}
+.agotado::before{content:"";width:6px;height:6px;border-radius:100px;background:var(--linea-fuerte);flex:none}
 
 /* la referencia tambien va sobre la foto, chiquita, como grabado */
 .sello{
@@ -211,8 +301,14 @@ body{
 .lupa-x{background:none;border:1px solid rgba(246,241,233,.35);color:#f6f1e9;border-radius:100px;width:36px;height:36px;font-size:19px;line-height:1;cursor:pointer}
 .lupa-x:hover{background:rgba(246,241,233,.12)}
 .lupa-marco{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;position:relative;margin:14px 0}
-.lupa-marco img{max-width:100%;max-height:100%;object-fit:contain;background:#fff;border-radius:6px}
-.lupa-nav{background:rgba(246,241,233,.14);border:none;color:#f6f1e9;width:42px;height:42px;border-radius:100px;font-size:20px;cursor:pointer;position:absolute;top:50%;transform:translateY(-50%)}
+/* las fotos del catalogo son cuadradas: el recuadro sigue esa proporcion
+   para que la banda de SIN STOCK cruce la foto y no el fondo */
+.lupa-foto{
+  position:relative;overflow:hidden;border-radius:6px;background:#fff;
+  aspect-ratio:1/1;height:100%;max-width:100%;max-height:100%;flex:0 1 auto;
+}
+.lupa-foto img{width:100%;height:100%;object-fit:contain;display:block}
+.lupa-nav{background:rgba(246,241,233,.14);border:none;color:#f6f1e9;width:42px;height:42px;border-radius:100px;font-size:20px;cursor:pointer;position:absolute;top:50%;transform:translateY(-50%);z-index:2}
 .lupa-nav:hover{background:rgba(246,241,233,.3)}
 .lupa-nav.prev{left:0}
 .lupa-nav.next{right:0}
@@ -223,8 +319,9 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
 .cierre-tit{font-size:19px;font-weight:650;letter-spacing:-.01em}
 .cierre-txt{margin-top:9px;font-size:14.5px;line-height:1.55;color:var(--tinta)}
 .cierre-txt.suave{color:var(--tinta-suave)}
+.botones{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}
 .boton-wa{
-  display:inline-flex;align-items:center;gap:8px;margin-top:18px;
+  display:inline-flex;align-items:center;gap:8px;
   background:var(--tinta);color:var(--papel);text-decoration:none;
   padding:12px 20px;border-radius:100px;
   font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
@@ -232,6 +329,15 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
 .boton-wa:hover{background:var(--rojo)}
 .boton-wa:active{transform:scale(.98)}
 .boton-wa svg{width:15px;height:15px;fill:currentColor}
+.boton-ig{
+  display:inline-flex;align-items:center;gap:8px;
+  background:transparent;color:var(--tinta);text-decoration:none;
+  border:1px solid var(--linea-fuerte);padding:11px 19px;border-radius:100px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:lowercase;
+}
+.boton-ig:hover{border-color:var(--tinta);background:var(--papel-alto)}
+.boton-ig:active{transform:scale(.98)}
+.boton-ig svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6}
 </style>
 </head>
 <body>
@@ -251,23 +357,61 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       <input id="q" type="search" placeholder="Buscar código" autocomplete="off" aria-label="Buscar armazones">
     </div>
-    <div class="filtros">
-      <div class="chips" role="group" aria-label="Filtrar por categoría">
-        <button class="chip" data-filtro="categoria" data-valor="" aria-pressed="true">Todos</button>
-        <button class="chip" data-filtro="categoria" data-valor="Mujer" aria-pressed="false">Mujer</button>
-        <button class="chip" data-filtro="categoria" data-valor="Hombre" aria-pressed="false">Hombre</button>
-        <button class="chip" data-filtro="categoria" data-valor="Niño" aria-pressed="false">Niño</button>
-        <button class="chip" data-filtro="categoria" data-valor="Clip on" aria-pressed="false">Clip on</button>
+
+    <button class="btn-filtrar" id="btn-filtrar" aria-expanded="false" aria-controls="panel">
+      <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>
+      Filtrar<span class="globo" id="globo" hidden>0</span>
+    </button>
+
+    <div class="segmentado" role="group" aria-label="Tipo de armazón">
+      <button class="seg" data-filtro="tipo" data-valor="" aria-pressed="true">Todos</button>
+      <button class="seg" data-filtro="tipo" data-valor="Receta" aria-pressed="false">Receta</button>
+      <button class="seg" data-filtro="tipo" data-valor="Sol" aria-pressed="false">Sol</button>
+      <button class="seg" data-filtro="tipo" data-valor="Clip on" aria-pressed="false">Clip on</button>
+    </div>
+  </div>
+
+  <div class="panel" id="panel" hidden>
+    <div class="env panel-in">
+      <div class="grupo">
+        <p class="grupo-tit" id="t-cat">Categoría</p>
+        <div class="chips" role="group" aria-labelledby="t-cat">
+          <button class="chip" data-filtro="categoria" data-valor="" aria-pressed="true">Todas</button>
+          <button class="chip" data-filtro="categoria" data-valor="Mujer" aria-pressed="false">Mujer</button>
+          <button class="chip" data-filtro="categoria" data-valor="Hombre" aria-pressed="false">Hombre</button>
+          <button class="chip" data-filtro="categoria" data-valor="Unisex" aria-pressed="false">Unisex</button>
+          <button class="chip" data-filtro="categoria" data-valor="Niño" aria-pressed="false">Niño</button>
+        </div>
       </div>
-      <span class="corte" id="corte-marca" aria-hidden="true" hidden></span>
-      <div class="chips" id="chips-marca" role="group" aria-label="Filtrar por marca"></div>
-      <span class="corte" aria-hidden="true"></span>
-      <div class="chips" role="group" aria-label="Filtrar por material">
-        <button class="chip" data-filtro="material" data-valor="" aria-pressed="true">Todos</button>
-        <button class="chip" data-filtro="material" data-valor="Acetato" aria-pressed="false">Acetato</button>
-        <button class="chip" data-filtro="material" data-valor="Metal" aria-pressed="false">Metal</button>
-        <button class="chip" data-filtro="material" data-valor="Metal y acetato" aria-pressed="false">Metal y acetato</button>
-        <button class="chip" data-filtro="material" data-valor="Plástico" aria-pressed="false">Plástico</button>
+
+      <div class="grupo">
+        <p class="grupo-tit" id="t-mat">Material</p>
+        <div class="chips" role="group" aria-labelledby="t-mat">
+          <button class="chip" data-filtro="material" data-valor="" aria-pressed="true">Todos</button>
+          <button class="chip" data-filtro="material" data-valor="Acetato" aria-pressed="false">Acetato</button>
+          <button class="chip" data-filtro="material" data-valor="Metal" aria-pressed="false">Metal</button>
+          <button class="chip" data-filtro="material" data-valor="Metal y acetato" aria-pressed="false">Metal y acetato</button>
+          <button class="chip" data-filtro="material" data-valor="Plástico" aria-pressed="false">Plástico</button>
+        </div>
+      </div>
+
+      <div class="grupo" id="grupo-marca" hidden>
+        <p class="grupo-tit" id="t-marca">Marca</p>
+        <div class="chips" id="chips-marca" role="group" aria-labelledby="t-marca"></div>
+      </div>
+
+      <div class="grupo">
+        <p class="grupo-tit" id="t-stock">Disponibilidad</p>
+        <div class="chips" role="group" aria-labelledby="t-stock">
+          <button class="chip" data-filtro="stock" data-valor="" aria-pressed="true">Todos</button>
+          <button class="chip" data-filtro="stock" data-valor="si" aria-pressed="false">Solo con stock</button>
+        </div>
+      </div>
+
+      <div class="panel-pie">
+        <span class="cuantos" id="cuantos-panel"></span>
+        <button class="txt-btn" id="limpiar" type="button">Limpiar filtros</button>
+        <button class="btn-listo" id="listo" type="button">Ver resultados</button>
       </div>
     </div>
   </div>
@@ -280,10 +424,17 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
 
 <footer>
   <div class="env"><div class="cierre">
-    <p class="cierre-tit">No encontraste el que buscabas</p>
+    <p class="cierre-tit">¿No encontraste el que buscabas?</p>
     <p class="cierre-txt">En el local tenemos cientos de modelos más que no llegaron a este catálogo. Contanos qué estás buscando y te ayudamos.</p>
     <p class="cierre-txt suave">Si ya elegiste uno, mandanos su código o una captura de la foto.</p>
-    <span id="pie-wa"></span>
+    <p class="cierre-txt">Seguinos en Instagram como <b>@lookingoptica</b>: ahí publicamos los ingresos nuevos y las promociones.</p>
+    <div class="botones">
+      <span id="pie-wa"></span>
+      <a class="boton-ig" href="https://www.instagram.com/lookingoptica/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none"/></svg>
+        @lookingoptica
+      </a>
+    </div>
   </div></div>
 </footer>
 
@@ -294,7 +445,10 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
   </div>
   <div class="lupa-marco">
     <button class="lupa-nav prev" id="lupa-prev" aria-label="Foto anterior">&#8249;</button>
-    <img id="lupa-img" alt="">
+    <span class="lupa-foto">
+      <img id="lupa-img" alt="">
+      <span class="banda" id="lupa-banda" hidden>Sin stock</span>
+    </span>
     <button class="lupa-nav next" id="lupa-next" aria-label="Foto siguiente">&#8250;</button>
   </div>
   <p class="lupa-pie" id="lupa-pie"></p>
@@ -327,7 +481,7 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
 
   function aObjetos(filas){
     if(!filas.length) return [];
-    const cab=filas[0].map(h=>h.trim().toLowerCase());
+    const cab=filas[0].map(h=>h.trim().replace(/^\ufeff/,"").toLowerCase());
     return filas.slice(1).map(f=>{
       const o={};
       cab.forEach((h,i)=>{ o[h]=(f[i]||"").trim(); });
@@ -349,39 +503,72 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
       tipo:(o.tipo||"").trim(),
       color:(o.color||"").trim(),
       fotos:fotos,
-      activo:((o.activo||"si").toLowerCase()!=="no")
+      activo:((o.activo||"si").toLowerCase()!=="no"),
+      // columna nueva: si dice "no", el modelo se muestra con la banda de SIN STOCK
+      stock:((o.stock||"si").trim().toLowerCase()!=="no")
     };
   }
 
+  /* Los armazones que no tienen marca cargada en la planilla se agrupan bajo este
+     boton en el filtro de marcas. En la tarjeta no se muestra nada. */
+  const CASA="Sin especificar";
+  const CASA_VALOR="__casa__";
+
   /* ── Estado ─────────────────────────────────────────────── */
-  let MODELOS=[], filtros={material:"",categoria:"",marca:""}, busqueda="", origen="";
+  let MODELOS=[], filtros={tipo:"",material:"",categoria:"",marca:"",stock:""}, busqueda="", origen="";
   const $grilla=document.getElementById("grilla");
   const $conteo=document.getElementById("conteo");
+  const $panel=document.getElementById("panel");
+  const $btnFiltrar=document.getElementById("btn-filtrar");
+  const $globo=document.getElementById("globo");
+  const $cuantosPanel=document.getElementById("cuantos-panel");
 
-  function sinAcentos(s){ return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
+  function sinAcentos(s){ return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
 
   /* Un armazon marcado como Unisex aparece tambien en Mujer y en Hombre. */
   function coincideCategoria(cats, filtro){
     const c=sinAcentos(cats), f=sinAcentos(filtro);
+    if(f==="unisex") return c.indexOf("unisex")>-1;
     if(c.indexOf(f)>-1) return true;
     return (f==="mujer"||f==="hombre") && c.indexOf("unisex")>-1;
+  }
+
+  /* Receta / Sol / Clip on. Si la celda "tipo" quedo vacia, cuenta como Receta. */
+  function coincideTipo(tipo, filtro){
+    const t=sinAcentos(tipo), f=sinAcentos(filtro);
+    if(f==="receta") return t==="" || t.indexOf("receta")>-1;
+    if(f==="clip on") return t.indexOf("clip")>-1;
+    return t.indexOf(f)>-1;
   }
 
   function visibles(){
     const q=sinAcentos(busqueda.trim());
     return MODELOS.filter(m=>{
       if(!m.activo) return false;
+      if(filtros.tipo && !coincideTipo(m.tipo, filtros.tipo)) return false;
       if(filtros.material && m.material.toLowerCase()!==filtros.material.toLowerCase()) return false;
       if(filtros.categoria && !coincideCategoria(m.categoria, filtros.categoria)) return false;
-      if(filtros.marca && sinAcentos(m.marca)!==sinAcentos(filtros.marca)) return false;
+      if(filtros.marca){
+        if(filtros.marca===CASA_VALOR){ if(m.marca) return false; }
+        else if(sinAcentos(m.marca)!==sinAcentos(filtros.marca)) return false;
+      }
+      if(filtros.stock==="si" && !m.stock) return false;
       if(!q) return true;
-      return sinAcentos([m.ref,m.codigo,m.marca,m.nombre,m.color,m.categoria,m.material,m.tipo].join(" ")).indexOf(q)>-1;
+      const texto=[m.ref,m.codigo,m.marca,m.nombre,m.color,m.categoria,m.material,m.tipo,
+                   m.stock?"":"sin stock agotado"].join(" ");
+      return sinAcentos(texto).indexOf(q)>-1;
     });
   }
 
   const ICONO_WA='<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1112 20zm4.4-5.8c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.6.1a6.6 6.6 0 01-3.2-2.8c-.2-.4.2-.4.6-1.2a.5.5 0 000-.5c0-.1-.6-1.4-.8-1.9s-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4 5 5 0 002.3.5 2.7 2.7 0 001.8-1.3 2.2 2.2 0 00.2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>';
 
   function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  function etiquetaMaterial(mat){
+    if(mat==="Metal y acetato")
+      return '<span class="largo">Metal + acetato</span><span class="corto">Mixto</span>';
+    return esc(mat);
+  }
 
   function tarjeta(m,idx){
     const CLASES={acetato:"acetato",metal:"metal",plastico:"plastico","metal y acetato":"mixto"};
@@ -394,6 +581,8 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
       ? '<div class="thumbs">'+m.fotos.map((f,i)=>
           '<button class="thumb" data-i="'+i+'" aria-pressed="'+(i===0)+'" aria-label="Foto '+(i+1)+'"><img src="'+esc(f)+'" alt="" loading="lazy"></button>').join("")+'</div>'
       : "";
+    const banda = m.stock ? "" : '<span class="banda">Sin stock</span>';
+    const bajoTitulo=[m.categoria, (m.tipo && sinAcentos(m.tipo)!=="receta") ? m.tipo : ""].filter(Boolean).join("  ·  ");
     const wa = window.WHATSAPP
       ? '<a class="consultar" target="_blank" rel="noopener" href="https://wa.me/'+window.WHATSAPP+'?text='+encodeURIComponent("Hola! Me interesa el armazón "+titulo+(m.marca?" de "+m.marca:"")+(m.color?" en "+m.color:"")+".")+'">'+ICONO_WA+'Consultar</a>'
       : "";
@@ -401,16 +590,17 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
         '<div class="visor" data-visor role="button" tabindex="0" aria-label="Ampliar foto de '+esc(titulo)+'">'+
           imgs+
           (m.ref?'<span class="sello">'+esc(m.ref)+'</span>':"")+
-          (clase?'<span class="material '+clase+'">'+esc(m.material==="Metal y acetato"?"Metal + acetato":m.material)+'</span>':"")+
+          (clase?'<span class="material '+clase+'">'+etiquetaMaterial(m.material)+'</span>':"")+
+          banda+
           thumbs+
         '</div>'+
         '<div class="cuerpo">'+
           (m.marca?'<p class="marca">'+esc(m.marca)+'</p>':"")+
           '<h2 class="ref">'+esc(titulo)+'</h2>'+
           (m.nombre?'<p class="nombre">'+esc(m.nombre)+'</p>':"")+
-          (m.codigo?'<p class="codigo">'+esc(m.codigo)+'</p>':"")+
-          (m.categoria?'<p class="categoria">'+esc(m.categoria)+'</p>':"")+
+          (bajoTitulo?'<p class="categoria">'+esc(bajoTitulo)+'</p>':"")+
           (m.color?'<p class="color">'+esc(m.color)+'</p>':"")+
+          (m.stock?"":'<p class="agotado">Sin stock</p>')+
           wa+
         '</div>'+
       '</article>';
@@ -418,14 +608,19 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
 
   function pintar(){
     const lista=visibles();
+    const agotados=lista.filter(m=>!m.stock).length;
     const cuantos = lista.length===1 ? "1 modelo" : lista.length+" modelos";
-    $conteo.textContent = origen==="local" ? cuantos+"  ·  copia local" : cuantos;
+    let texto=cuantos;
+    if(agotados) texto+="  ·  "+agotados+(agotados===1?" sin stock":" sin stock");
+    if(origen==="local") texto+="  ·  copia local";
+    $conteo.textContent=texto;
+    $cuantosPanel.textContent=cuantos;
+    marcarGlobo();
     if(!lista.length){
-      $grilla.innerHTML="";
-      $grilla.insertAdjacentHTML("beforeend",'<p class="aviso" style="grid-column:1/-1">No hay armazones que coincidan.<br>Probá con otro código o sacá los filtros.</p>');
+      $grilla.innerHTML='<p class="aviso" style="grid-column:1/-1">No hay armazones que coincidan.<br>Probá con otro código o sacá los filtros.</p>';
       return;
     }
-    $grilla.innerHTML=lista.map((m,i)=>tarjeta(m,MODELOS.indexOf(m))).join("");
+    $grilla.innerHTML=lista.map(m=>tarjeta(m,MODELOS.indexOf(m))).join("");
   }
 
   /* ── Interacción de tarjetas ────────────────────────────── */
@@ -454,7 +649,8 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
 
   /* ── Visor ampliado ─────────────────────────────────────── */
   const $lupa=document.getElementById("lupa"), $lupaImg=document.getElementById("lupa-img"),
-        $lupaCod=document.getElementById("lupa-cod"), $lupaPie=document.getElementById("lupa-pie");
+        $lupaCod=document.getElementById("lupa-cod"), $lupaPie=document.getElementById("lupa-pie"),
+        $lupaBanda=document.getElementById("lupa-banda");
   let lupaModelo=null, lupaFoto=0;
 
   function abrirLupa(idx,foto){
@@ -468,8 +664,9 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
     const m=lupaModelo;
     $lupaImg.src=m.fotos[lupaFoto]||"";
     $lupaImg.alt=m.nombre||m.codigo||"Armazón";
-    $lupaCod.textContent=[m.ref,m.codigo,m.color,m.categoria].filter(Boolean).join("  ·  ") || (m.nombre||"");
+    $lupaCod.textContent=[m.ref,m.color,m.categoria].filter(Boolean).join("  ·  ") || (m.nombre||"");
     $lupaPie.textContent=m.fotos.length>1 ? (lupaFoto+1)+" de "+m.fotos.length : (m.material||"");
+    $lupaBanda.hidden=m.stock;
     const solo=m.fotos.length<2;
     document.getElementById("lupa-prev").style.display=solo?"none":"";
     document.getElementById("lupa-next").style.display=solo?"none":"";
@@ -484,7 +681,9 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
   document.getElementById("lupa-x").onclick=cerrarLupa;
   document.getElementById("lupa-prev").onclick=()=>mover(-1);
   document.getElementById("lupa-next").onclick=()=>mover(1);
-  $lupa.addEventListener("click",e=>{ if(e.target===$lupa||e.target.classList.contains("lupa-marco")) cerrarLupa(); });
+  $lupa.addEventListener("click",e=>{
+    if(e.target===$lupa||e.target.classList.contains("lupa-marco")||e.target.classList.contains("lupa-foto")) cerrarLupa();
+  });
   document.addEventListener("keydown",e=>{
     if(!$lupa.classList.contains("abierta")) return;
     if(e.key==="Escape") cerrarLupa();
@@ -504,10 +703,42 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
   function activar(b){
     const grupo=b.dataset.filtro;
     filtros[grupo]=b.dataset.valor;
-    document.querySelectorAll('.chip[data-filtro="'+grupo+'"]').forEach(o=>o.setAttribute("aria-pressed",o===b));
+    document.querySelectorAll('[data-filtro="'+grupo+'"]').forEach(o=>o.setAttribute("aria-pressed",String(o===b)));
     pintar();
   }
-  document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>activar(b)));
+  function enganchar(cont){
+    cont.querySelectorAll("[data-filtro]").forEach(b=>b.addEventListener("click",()=>activar(b)));
+  }
+  enganchar(document);
+
+  /* Cuantos filtros del panel estan puestos (el de Receta/Sol no cuenta: se ve solo). */
+  function marcarGlobo(){
+    const n=["categoria","material","marca","stock"].filter(k=>filtros[k]).length;
+    $globo.hidden=!n;
+    $globo.textContent=n;
+  }
+
+  function abrirPanel(v){
+    $panel.hidden=!v;
+    $btnFiltrar.setAttribute("aria-expanded",String(v));
+  }
+  $btnFiltrar.addEventListener("click",()=>abrirPanel($panel.hidden));
+  document.getElementById("listo").addEventListener("click",()=>abrirPanel(false));
+  document.getElementById("limpiar").addEventListener("click",()=>{
+    ["categoria","material","marca","stock"].forEach(k=>{
+      filtros[k]="";
+      document.querySelectorAll('[data-filtro="'+k+'"]').forEach(o=>o.setAttribute("aria-pressed",String(o.dataset.valor==="")));
+    });
+    pintar();
+  });
+  document.addEventListener("click",e=>{
+    if($panel.hidden) return;
+    if(!e.target.closest(".barra")) abrirPanel(false);
+  });
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape" && !$panel.hidden){ abrirPanel(false); $btnFiltrar.focus(); }
+  });
+
   let t=null;
   document.getElementById("q").addEventListener("input",e=>{
     clearTimeout(t);
@@ -518,20 +749,24 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
   $grilla.innerHTML=Array.from({length:8},()=>'<div class="esqueleto"><div class="b"></div><div class="c"></div></div>').join("");
 
   function chipsDeMarca(){
-    const marcas=[...new Set(MODELOS.filter(m=>m.activo&&m.marca).map(m=>m.marca))]
+    const activos=MODELOS.filter(m=>m.activo);
+    const marcas=[...new Set(activos.filter(m=>m.marca).map(m=>m.marca))]
       .sort((a,b)=>a.localeCompare(b,"es"));
+    const hayCasa=activos.some(m=>!m.marca);
     const cont=document.getElementById("chips-marca");
-    const corte=document.getElementById("corte-marca");
-    if(!marcas.length){ cont.innerHTML=""; corte.hidden=true; return; }
-    corte.hidden=false;
-    cont.innerHTML='<button class="chip" data-filtro="marca" data-valor="" aria-pressed="true">Marca</button>'+
+    const grupo=document.getElementById("grupo-marca");
+    if(!marcas.length && !hayCasa){ cont.innerHTML=""; grupo.hidden=true; return; }
+    grupo.hidden=false;
+    cont.innerHTML='<button class="chip" data-filtro="marca" data-valor="" aria-pressed="true">Todas</button>'+
+      (hayCasa?'<button class="chip" data-filtro="marca" data-valor="'+CASA_VALOR+'" aria-pressed="false">'+esc(CASA)+'</button>':"")+
       marcas.map(x=>'<button class="chip" data-filtro="marca" data-valor="'+esc(x)+'" aria-pressed="false">'+esc(x)+'</button>').join("");
-    cont.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>activar(b)));
+    enganchar(cont);
   }
 
-  function usar(csv){
+  function usar(csv,de){
     // se muestran del ultimo al primero: lo que se agrega abajo en la planilla
     // aparece arriba de todo en el catalogo
+    origen=de||"";
     MODELOS=aObjetos(parseCSV(csv)).map(normalizar).reverse();
     if(!MODELOS.length){ fallo("La planilla está vacía."); return; }
     chipsDeMarca();
@@ -558,12 +793,8 @@ footer{border-top:1px solid var(--linea-fuerte);padding:40px 0 56px;background:v
         usar(txt, "planilla");
       })
       .catch(err=>{
-        if(location.protocol==="file:"){
-          console.warn("Catálogo: al abrir el archivo desde la computadora, el navegador no deja leer la planilla de Google. Es una regla de seguridad, no un error del catálogo. Una vez publicado en internet funciona bien.");
-        }else{
-          console.warn("Catálogo: no se pudo leer la planilla de Google (" + err.message + "). Se usa la copia local de datos.js.");
-          console.warn("Revisá que el link termine en output=csv y que la hoja esté publicada en Archivo > Compartir > Publicar en la web.");
-        }
+        console.warn("Catálogo: no se pudo leer la planilla de Google (" + err.message + "). Se usa la copia local de datos.js.");
+        console.warn("Revisá que el link termine en output=csv y que la hoja esté publicada en Archivo > Compartir > Publicar en la web.");
         if(window.DATOS_LOCALES) usar(window.DATOS_LOCALES, "local");
         else fallo("No se pudo leer la planilla.");
       });
